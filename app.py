@@ -78,6 +78,52 @@ def check_average(img_list):
 def poly6(x, b, c, e, g):
     return 1 + b * x + c * x**2 + e * x**4 + g * x**6
 
+def modify_json():
+    json_arr = []
+    with open('old_tags.json', 'r') as f:  # write json object as tags.json file
+        for line in f:
+            s_line = line.strip()
+            json_arr.append(s_line.replace(';', ','))
+
+    json_arr[1] = '  ' + json_arr[1]
+    for i in range(5):
+        json_arr[2 + 10 * i] = '    ' + json_arr[2 + 10 * i]
+
+        json_arr[3 + 10 * i] = json_arr[3 + 10 * i][:len(json_arr[3 + 10 * i]) - 2]
+        wl2 = json_arr[3 + 10 * i].rfind('"')
+        json_arr[3 + 10 * i] = '      ' + json_arr[3 + 10 * i][:wl2] + '' + json_arr[3 + 10 * i][wl2 + 1:] + ','
+
+        json_arr[4 + 10 * i] = '      ' + json_arr[4 + 10 * i]
+
+        json_arr[5 + 10 * i] = json_arr[5 + 10 * i][:len(json_arr[5 + 10 * i]) - 2]
+        wl2 = json_arr[5 + 10 * i].rfind('"')
+        json_arr[5 + 10 * i] = '      ' + json_arr[5 + 10 * i][:wl2] + '' + json_arr[5 + 10 * i][wl2 + 1:] + ','
+
+        json_arr[6 + 10 * i] = json_arr[6 + 10 * i][:len(json_arr[6 + 10 * i]) - 2]
+        wl2 = json_arr[6 + 10 * i].rfind('"')
+        json_arr[6 + 10 * i] = '      ' + json_arr[6 + 10 * i][:wl2] + '' + json_arr[6 + 10 * i][wl2 + 1:] + ','
+
+        json_arr[7 + 10 * i] = json_arr[7 + 10 * i][:len(json_arr[7 + 10 * i]) - 2]
+        wl2 = json_arr[7 + 10 * i].rfind('"')
+        json_arr[7 + 10 * i] = '      ' + json_arr[7 + 10 * i][:wl2] + '' + json_arr[7 + 10 * i][wl2 + 1:] + ','
+
+        json_arr[8 + 10 * i] = json_arr[8 + 10 * i][:len(json_arr[8 + 10 * i]) - 2]
+        wl2 = json_arr[8 + 10 * i].rfind('"')
+        json_arr[8 + 10 * i] = '      ' + json_arr[8 + 10 * i][:wl2] + '[' + json_arr[8 + 10 * i][wl2 + 1:] + '],'
+
+        json_arr[9 + 10 * i] = json_arr[9 + 10 * i][:len(json_arr[9 + 10 * i]) - 2]
+        wl2 = json_arr[9 + 10 * i].rfind('"')
+        json_arr[9 + 10 * i] = '      ' + json_arr[9 + 10 * i][:wl2] + '[' + json_arr[9 + 10 * i][wl2 + 1:] + '],'
+
+        json_arr[10 + 10 * i] = json_arr[10 + 10 * i][:len(json_arr[10 + 10 * i]) - 2]
+        wl2 = json_arr[10 + 10 * i].rfind('"')
+        json_arr[10 + 10 * i] = '      ' + json_arr[10 + 10 * i][:wl2] + '[' + json_arr[10 + 10 * i][wl2 + 1:] + '0]'
+
+        json_arr[11 + 10 * i] = '    ' + json_arr[11 + 10 * i]
+    json_arr[52] = '  ' + json_arr[52]
+    with open('tags.json', 'w') as f:  # write parsed ini_string as tags.ini file
+        f.write("\n".join(str(js) for js in json_arr))
+
 
 class Ui_MainWindow(object):
     """
@@ -394,51 +440,7 @@ class Ui_MainWindow(object):
             with open('old_tags.json', 'w') as f:  # write json object as tags.json file
                 json.dump(json_result, f, indent=2)
                 f.close()
-
-            json_arr = []
-            with open('old_tags.json', 'r') as f:  # write json object as tags.json file
-                for line in f:
-                    s_line = line.strip()
-                    json_arr.append(s_line.replace(';', ','))
-
-            json_arr[1] = '  ' + json_arr[1]
-            for i in range(5):
-                json_arr[2 + 10 * i] = '    ' + json_arr[2 + 10 * i]
-
-                json_arr[3 + 10 * i] = json_arr[3 + 10 * i][:len(json_arr[3 + 10 * i]) - 2]
-                wl2 = json_arr[3 + 10 * i].rfind('"')
-                json_arr[3 + 10 * i] = '      ' + json_arr[3 + 10 * i][:wl2] + '' + json_arr[3 + 10 * i][wl2 + 1:] + ','
-
-                json_arr[4 + 10 * i] = '      ' + json_arr[4 + 10 * i]
-
-                json_arr[5 + 10 * i] = json_arr[5 + 10 * i][:len(json_arr[5 + 10 * i]) - 2]
-                wl2 = json_arr[5 + 10 * i].rfind('"')
-                json_arr[5 + 10 * i] = '      ' + json_arr[5 + 10 * i][:wl2] + '' + json_arr[5 + 10 * i][wl2 + 1:] + ','
-
-                json_arr[6 + 10 * i] = json_arr[6 + 10 * i][:len(json_arr[6 + 10 * i]) - 2]
-                wl2 = json_arr[6 + 10 * i].rfind('"')
-                json_arr[6 + 10 * i] = '      ' + json_arr[6 + 10 * i][:wl2] + '' + json_arr[6 + 10 * i][wl2 + 1:] + ','
-
-                json_arr[7 + 10 * i] = json_arr[7 + 10 * i][:len(json_arr[7 + 10 * i]) - 2]
-                wl2 = json_arr[7 + 10 * i].rfind('"')
-                json_arr[7 + 10 * i] = '      ' + json_arr[7 + 10 * i][:wl2] + '' + json_arr[7 + 10 * i][wl2 + 1:] + ','
-
-                json_arr[8 + 10 * i] = json_arr[8 + 10 * i][:len(json_arr[8 + 10 * i]) - 2]
-                wl2 = json_arr[8 + 10 * i].rfind('"')
-                json_arr[8 + 10 * i] = '      ' + json_arr[8 + 10 * i][:wl2] + '[' + json_arr[8 + 10 * i][wl2 + 1:]+'],'
-
-                json_arr[9 + 10 * i] = json_arr[9 + 10 * i][:len(json_arr[9 + 10 * i]) - 2]
-                wl2 = json_arr[9 + 10 * i].rfind('"')
-                json_arr[9 + 10 * i] = '      ' + json_arr[9 + 10 * i][:wl2] + '[' + json_arr[9 + 10 * i][wl2 + 1:]+'],'
-
-                json_arr[10 + 10 * i] = json_arr[10 + 10 * i][:len(json_arr[10 + 10 * i]) - 2]
-                wl2 = json_arr[10 + 10 * i].rfind('"')
-                json_arr[10 + 10 * i] = '      ' + json_arr[10 + 10 * i][:wl2]+'['+json_arr[10 + 10 * i][wl2 + 1:]+'0]'
-
-                json_arr[11 + 10 * i] = '    ' + json_arr[11 + 10 * i]
-            json_arr[52] = '  ' + json_arr[52]
-            with open('tags.json', 'w') as f:  # write parsed ini_string as tags.ini file
-                f.write("\n".join(str(js) for js in json_arr))
+            modify_json()
 
             config = configparser.ConfigParser(allow_no_value=True)  # setup config parser to work write .ini file
             config.read_string(ini_string)
