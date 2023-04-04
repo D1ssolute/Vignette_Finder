@@ -78,52 +78,6 @@ def check_average(img_list):
 def poly6(x, b, c, e, g):
     return 1 + b * x + c * x**2 + e * x**4 + g * x**6
 
-def modify_json():
-    json_arr = []
-    with open('old_tags.json', 'r') as f:  # write json object as tags.json file
-        for line in f:
-            s_line = line.strip()
-            json_arr.append(s_line.replace(';', ','))
-
-    json_arr[1] = '  ' + json_arr[1]
-    for i in range(5):
-        json_arr[2 + 10 * i] = '    ' + json_arr[2 + 10 * i]
-
-        json_arr[3 + 10 * i] = json_arr[3 + 10 * i][:len(json_arr[3 + 10 * i]) - 2]
-        wl2 = json_arr[3 + 10 * i].rfind('"')
-        json_arr[3 + 10 * i] = '      ' + json_arr[3 + 10 * i][:wl2] + '' + json_arr[3 + 10 * i][wl2 + 1:] + ','
-
-        json_arr[4 + 10 * i] = '      ' + json_arr[4 + 10 * i]
-
-        json_arr[5 + 10 * i] = json_arr[5 + 10 * i][:len(json_arr[5 + 10 * i]) - 2]
-        wl2 = json_arr[5 + 10 * i].rfind('"')
-        json_arr[5 + 10 * i] = '      ' + json_arr[5 + 10 * i][:wl2] + '' + json_arr[5 + 10 * i][wl2 + 1:] + ','
-
-        json_arr[6 + 10 * i] = json_arr[6 + 10 * i][:len(json_arr[6 + 10 * i]) - 2]
-        wl2 = json_arr[6 + 10 * i].rfind('"')
-        json_arr[6 + 10 * i] = '      ' + json_arr[6 + 10 * i][:wl2] + '' + json_arr[6 + 10 * i][wl2 + 1:] + ','
-
-        json_arr[7 + 10 * i] = json_arr[7 + 10 * i][:len(json_arr[7 + 10 * i]) - 2]
-        wl2 = json_arr[7 + 10 * i].rfind('"')
-        json_arr[7 + 10 * i] = '      ' + json_arr[7 + 10 * i][:wl2] + '' + json_arr[7 + 10 * i][wl2 + 1:] + ','
-
-        json_arr[8 + 10 * i] = json_arr[8 + 10 * i][:len(json_arr[8 + 10 * i]) - 2]
-        wl2 = json_arr[8 + 10 * i].rfind('"')
-        json_arr[8 + 10 * i] = '      ' + json_arr[8 + 10 * i][:wl2] + '[' + json_arr[8 + 10 * i][wl2 + 1:] + '],'
-
-        json_arr[9 + 10 * i] = json_arr[9 + 10 * i][:len(json_arr[9 + 10 * i]) - 2]
-        wl2 = json_arr[9 + 10 * i].rfind('"')
-        json_arr[9 + 10 * i] = '      ' + json_arr[9 + 10 * i][:wl2] + '[' + json_arr[9 + 10 * i][wl2 + 1:] + '],'
-
-        json_arr[10 + 10 * i] = json_arr[10 + 10 * i][:len(json_arr[10 + 10 * i]) - 2]
-        wl2 = json_arr[10 + 10 * i].rfind('"')
-        json_arr[10 + 10 * i] = '      ' + json_arr[10 + 10 * i][:wl2] + '[' + json_arr[10 + 10 * i][wl2 + 1:] + '0]'
-
-        json_arr[11 + 10 * i] = '    ' + json_arr[11 + 10 * i]
-    json_arr[52] = '  ' + json_arr[52]
-    with open('tags.json', 'w') as f:  # write parsed ini_string as tags.ini file
-        f.write("\n".join(str(js) for js in json_arr))
-
 
 class Ui_MainWindow(object):
     """
@@ -248,7 +202,7 @@ class Ui_MainWindow(object):
                     com = ndimage.center_of_mass(image)  # center of mass calculation method
                     xc = int(com[0])
                     yc = int(com[1])
-                    center = str(xc)+";"+str(yc)
+                    center = str(xc)+","+str(yc)
                     centers.append(center)
                     note += str(xc)+", "+str(yc)
                     self.text.append(note)
@@ -288,9 +242,9 @@ class Ui_MainWindow(object):
                     note += str(checks)
                     coefficient = ""
                     for j in range(len(checks)):
-                        coefficient += str(checks[j])+";"
+                        coefficient += str(checks[j])+","
                     coefficient = coefficient[:len(coefficient)-1]
-                    coefficient = coefficient.replace("0.0;", "0;")
+                    coefficient = coefficient.replace("0.0,", "0,")
                     coefficients.append(coefficient)  # append formatted coefficients into err_arr
                     if checks[0] < -10e-05 or checks[0] > 10e-05:
                         err_arr.append(0)
@@ -332,54 +286,54 @@ class Ui_MainWindow(object):
                         {
                                 "Cams": {
                                     "0": {
-                                        "central_wavelength": "470",
+                                        "central_wavelength": 470,
                                         "band_name": "Blue",
-                                        "wavelength_fwhm": "28",
-                                        "fnumber": "1.8",
-                                        "band_sensitivity": "0.83",
-                                        "vignetting_center": "%s",
-                                        "vignetting_polynomial": "%s",
-                                        "radiometric_calibration": "0.000119266;0"
+                                        "wavelength_fwhm": 28,
+                                        "fnumber": 1.8,
+                                        "band_sensitivity": 0.83,
+                                        "vignetting_center": [%s],
+                                        "vignetting_polynomial": [%s],
+                                        "radiometric_calibration": [0.000119266,0]
                                     },
                                     "1": {
-                                        "central_wavelength": "560",
+                                        "central_wavelength": 560,
                                         "band_name": "Green",
-                                        "wavelength_fwhm": "20",
-                                        "fnumber": "1.8",
-                                        "band_sensitivity": "0.8",
-                                        "vignetting_center": "%s",
-                                        "vignetting_polynomial": "%s",
-                                        "radiometric_calibration": "0.000123596;0"
+                                        "wavelength_fwhm": 20,
+                                        "fnumber": 1.8,
+                                        "band_sensitivity": 0.8,
+                                        "vignetting_center": [%s],
+                                        "vignetting_polynomial": [%s],
+                                        "radiometric_calibration": [0.000123596,0]
                                     },
                                     "2": {
-                                        "central_wavelength": "665",
+                                        "central_wavelength": 665,
                                         "band_name": "Red",
-                                        "wavelength_fwhm": "14",
-                                        "fnumber": "1.8",
-                                        "band_sensitivity": "0.4",
-                                        "vignetting_center": "%s",
-                                        "vignetting_polynomial": "%s",
-                                        "radiometric_calibration": "0.000246559;0"
+                                        "wavelength_fwhm": 14,
+                                        "fnumber": 1.8,
+                                        "band_sensitivity": 0.4,
+                                        "vignetting_center": [%s],
+                                        "vignetting_polynomial": [%s],
+                                        "radiometric_calibration": [0.000246559,0]
                                     },
                                     "3": {
-                                        "central_wavelength": "720",
+                                        "central_wavelength": 720,
                                         "band_name": "Rededge",
-                                        "wavelength_fwhm": "12",
-                                        "fnumber": "1.8",
-                                        "band_sensitivity": "0.307",
-                                        "vignetting_center": "%s",
-                                        "vignetting_polynomial": "%s",
-                                        "radiometric_calibration": "0.000322352;0"
+                                        "wavelength_fwhm": 12,
+                                        "fnumber": 1.8,
+                                        "band_sensitivity": 0.307,
+                                        "vignetting_center": [%s],
+                                        "vignetting_polynomial": [%s],
+                                        "radiometric_calibration": [0.000322352,0]
                                     },
                                     "4": {
-                                        "central_wavelength": "840",
+                                        "central_wavelength": 840,
                                         "band_name": "NIR",
-                                        "wavelength_fwhm": "40",
-                                        "fnumber": "1.8",
-                                        "band_sensitivity": "0.73",
-                                        "vignetting_center": "%s",
-                                        "vignetting_polynomial": "%s",
-                                        "radiometric_calibration": "0.000135683;0"
+                                        "wavelength_fwhm": 40,
+                                        "fnumber": 1.8,
+                                        "band_sensitivity": 0.73,
+                                        "vignetting_center": [%s],
+                                        "vignetting_polynomial": [%s],
+                                        "radiometric_calibration": [0.000135683,0]
                                     }
                                 }
                             }
@@ -435,12 +389,14 @@ class Ui_MainWindow(object):
                         vignetting_polynomial=%s
                         radiometric_calibration=0.000135683;0
                         ''' % params
+            ini_string = ini_string.replace(',', ';')
 
             json_result = json.loads(json_string)  # create json object from json_string
-            with open('old_tags.json', 'w') as f:  # write json object as tags.json file
-                json.dump(json_result, f, indent=2)
-                f.close()
-            modify_json()
+            import _make_iterencode
+            json.encoder._make_iterencode = _make_iterencode._make_iterencode
+            indent = (2, None)
+            with open('tags.json', 'w') as f:  # write json object as tags.json file
+                json.dump(json_result, f, indent=indent)
 
             config = configparser.ConfigParser(allow_no_value=True)  # setup config parser to work write .ini file
             config.read_string(ini_string)
