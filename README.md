@@ -5,6 +5,9 @@ Before working make sure to install all the modules listed in **requirements.txt
 * **example_input** - folder with 10 example photos of evenly lit white wall from each band.
 
 * **example_output** - folder with processed configuration files of example_input photos.
+
+* **_make_iterencode.py** - override for function from built-in json Python modules. 
+
 ##
 
 Перед началом работы необходимо установить требуемые модули согласно **requirements.txt**. В случае возникновения ошибки автоматической настройки среды разработки имеет смысл установить самые актуальные версии модулей под вашу версию интерпретатора Python (т.е. если она не соответствует 3.11).
@@ -14,3 +17,5 @@ Before working make sure to install all the modules listed in **requirements.txt
 * **example_input** - директория с 10 фотографиями равномерно освящённой стены каждого канала для тестирования.
 
 * **example_output** - директория с полученными конфигурационными данными файлов в example_input.
+
+* **_make_iterencode.py** - переопределение функции встроенного модуля Python json.
