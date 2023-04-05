@@ -1,14 +1,9 @@
-import os
-import sys
+from PyQt5 import QtCore, QtGui, QtWidgets
+from pyexiv2 import Image
 import numpy as np
 import pandas as pd
-import matplotlib.image as mpimg
-from PyQt5 import QtCore, QtGui, QtWidgets
-from scipy.optimize import curve_fit
-from scipy import ndimage
-from pyexiv2 import Image
-import json
-import configparser
+import os
+import sys
 
 centers = []  # list to store vignette centers as "x;y" strings
 coefficients = []  # list to store vignette coefficients as "1.1;2.2;3.3;4.4;5.5;6.6" strings
@@ -51,6 +46,7 @@ def check_average(img_list):
         # Filter out all filenames but from band that is being processed
         names = [name for name in img_list if "img{}_".format(i) in name]
         img = Image(names[0])  # read first image and use its metadata as a reference
+
         exif = img.read_exif()
         xmp = img.read_xmp()
         iso_speed = exif['Exif.Photo.ISOSpeedRatings']
@@ -69,6 +65,7 @@ def check_average(img_list):
                 return False, averages
 
         # Open images as NumPy arrays of arrays for successful averaging of uint16 pixels
+        import matplotlib.image as mpimg
         images = np.array([np.array(mpimg.imread(name)) for name in names])
         average = np.array(np.mean(images, axis=0), dtype='uint16')
         averages.append(average)
@@ -140,7 +137,7 @@ class Ui_MainWindow(object):
         self.text.setHtml(_translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:\'Ubuntu\'; font-size:11pt; font-weight:400; font-style:normal;\">\n"
+"</style></head><body style=\" font-weight:400; font-style:normal;\">\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" color:#000000;\">"
                                                    "Чтобы начать, откройте директорию с фотографиями</span></p></body></html>"))
         self.btn_open.setText(_translate("MainWindow", "Открыть"))
@@ -186,10 +183,12 @@ class Ui_MainWindow(object):
             note = note[:len(note)-2]
             self.text.append(note)
             QtWidgets.qApp.processEvents()
+
             img_list, filtered = meta_filter(img_list)
             note = "Следующие изображения не содержат необходимые теги и будут проигнорированы: {}".format(filtered)
             self.text.append(note)
             QtWidgets.qApp.processEvents()
+
             meta_check, avg_arr, img_width, img_height, blacklevel = check_average(img_list)
             if meta_check:
                 self.text.append("Метаданные изображений совпадают, поиск параметров...")
@@ -199,9 +198,11 @@ class Ui_MainWindow(object):
                     note = ("Центр виньетирования для канала {}: ".format(i))
                     image = avg_arr[i].T
                     image = image - blacklevel
+                    from scipy import ndimage
                     com = ndimage.center_of_mass(image)  # center of mass calculation method
                     xc = int(com[0])
                     yc = int(com[1])
+
                     center = str(xc)+","+str(yc)
                     centers.append(center)
                     note += str(xc)+", "+str(yc)
@@ -232,6 +233,8 @@ class Ui_MainWindow(object):
                     df0 = np.vstack((df_r, df_V)).T
                     df0 = df0.astype(np.float64)
                     df0 = pd.DataFrame(df0, columns=['r', 'V'])  # form a dataframe for approximation
+
+                    from scipy.optimize import curve_fit
                     popt, pcov = curve_fit(poly6, df0['r'], df0['V'])  # coefficients calculation using polynomial
 
                     err_arr = []  # list to store limit-exceeding coefficients
@@ -246,6 +249,7 @@ class Ui_MainWindow(object):
                     coefficient = coefficient[:len(coefficient)-1]
                     coefficient = coefficient.replace("0.0,", "0,")
                     coefficients.append(coefficient)  # append formatted coefficients into err_arr
+
                     if checks[0] < -10e-05 or checks[0] > 10e-05:
                         err_arr.append(0)
                     if checks[1] < -10e-07 or checks[1] > 10e-07:
@@ -254,6 +258,7 @@ class Ui_MainWindow(object):
                         err_arr.append(3)
                     if checks[5] < -10e-19 or checks[5] > 10e-19:
                         err_arr.append(5)
+
                     note = note.replace("'", "")
                     note = note.replace("[", "")
                     note = note.replace("]", "")
@@ -264,7 +269,6 @@ class Ui_MainWindow(object):
                         note = note[:len(note)-2]
                     self.text.append(note)
                     QtWidgets.qApp.processEvents()
-
                 self.text.append("Скрипт завершен, сохраните файлы конфигурации")
                 QtWidgets.qApp.processEvents()
                 self.btn_save.setEnabled(True)  # enable "Сохранить" button
@@ -280,6 +284,7 @@ class Ui_MainWindow(object):
         folder = QtWidgets.QFileDialog.getExistingDirectory(None, "Выберите директорию")
         if folder:
             os.chdir(folder)
+
             params = (centers[0], coefficients[0], centers[1], coefficients[1], centers[2], coefficients[2], centers[3],
                       coefficients[3], centers[4], coefficients[4])
             json_string = '''
@@ -338,6 +343,7 @@ class Ui_MainWindow(object):
                                 }
                             }
                             ''' % params
+
             ini_string = '''
                         [Cam0]
                         central_wavelength=470
@@ -389,8 +395,8 @@ class Ui_MainWindow(object):
                         vignetting_polynomial=%s
                         radiometric_calibration=0.000135683;0
                         ''' % params
-            ini_string = ini_string.replace(',', ';')
 
+            import json
             json_result = json.loads(json_string)  # create json object from json_string
             import _make_iterencode
             json.encoder._make_iterencode = _make_iterencode._make_iterencode
@@ -398,10 +404,12 @@ class Ui_MainWindow(object):
             with open('tags.json', 'w') as f:  # write json object as tags.json file
                 json.dump(json_result, f, indent=indent)
 
+            import configparser
             config = configparser.ConfigParser(allow_no_value=True)  # setup config parser to work write .ini file
-            config.read_string(ini_string)
+            config.read_string(ini_string.replace(',', ';'))
             with open('tags.ini', 'w') as f:  # write parsed ini_string as tags.ini file
                 config.write(f)
+
             self.text.append("Файлы были сохранены в директорию {}".format(folder))
             self.btn_start.setEnabled(False)  # disable "Запустить скрипт" button until the new directory is opened
             QtWidgets.qApp.processEvents()
